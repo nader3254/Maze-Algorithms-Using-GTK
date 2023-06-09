@@ -1,6 +1,5 @@
 #include "window.h"
 
-
 MyWindow::MyWindow()
 {
     // Set the window's title
@@ -16,7 +15,24 @@ MyWindow::MyWindow()
     // Connect key press event signal
     signal_key_press_event().connect(sigc::mem_fun(*this, &MyWindow::on_key_press_event));
     mysplash = new splash();
+}
+void MyWindow::writeStep(const Cairo::RefPtr<Cairo::Context> &cr, cell _cell)
+{
 
+    int width = 0, height = 0, cx = 0, cy = 0;
+    cr->set_source_rgb(1.0, 1.0, 1.0); // Rectangle background color
+    cr->rectangle(((_cell.x * stepx) + 60) + 10, ((_cell.y * stepy) + 60) + 10, stepx - 20, stepy - 20);
+    cr->fill();
+    cx = (_cell.x * stepx) + 60;
+    cy = (_cell.y * stepy) + 60;
+    // std::cout << "x:" << cx << " y:" << cy << " cellx:" << _cell.x << " celly:" << _cell.y << " xstep:" << stepx << " ystep:" << stepy << std::endl;
+}
+cell MyWindow::currentCell()
+{
+    cell tmp;
+    tmp.x = ((circle_x - 60) / stepx);
+    tmp.y = ((circle_y - 60) / stepy);
+    return tmp;
 }
 
 bool MyWindow::on_draw(const Cairo::RefPtr<Cairo::Context> &cr)
@@ -27,8 +43,11 @@ bool MyWindow::on_draw(const Cairo::RefPtr<Cairo::Context> &cr)
     if (startGame == true)
     {
         // playing
-        drawBoarders(cr);
+        // ask algorithm to move
+
         drawHeadLine(cr);
+        drawBoarders(cr);
+        writeStep(cr, currentCell());
         drawPlayer(cr);
     }
     else if (winner == true)
@@ -45,7 +64,7 @@ bool MyWindow::on_draw(const Cairo::RefPtr<Cairo::Context> &cr)
         cr->move_to(280, 280); // Position of the text
         cr->show_text("You Won");
 
-                Pango::FontDescription font_desc2("Arial 25");
+        Pango::FontDescription font_desc2("Arial 25");
         cr->select_font_face(font_desc2.get_family(), Cairo::FONT_SLANT_NORMAL, Cairo::FONT_WEIGHT_NORMAL);
         cr->set_font_size(font_desc2.get_size() / Pango::SCALE);
 
@@ -59,7 +78,6 @@ bool MyWindow::on_draw(const Cairo::RefPtr<Cairo::Context> &cr)
     {
         // intro
         mysplash->draw(cr);
-     
     }
 
     return true;
@@ -91,17 +109,17 @@ void MyWindow::drawHeadLine(const Cairo::RefPtr<Cairo::Context> &cr)
     cr->select_font_face(font_desc2.get_family(), Cairo::FONT_SLANT_NORMAL, Cairo::FONT_WEIGHT_NORMAL);
     cr->set_font_size(font_desc2.get_size() / Pango::SCALE);
 
-    // Set the text color
-    cr->set_source_rgb(0.0, 0.0, 1.0); // Black color
-    // Draw the text "Maze Game"
-    cr->move_to(580, 580); // Position of the text
-    cr->show_text("Start");
+    // // Set the text color
+    // cr->set_source_rgb(0.0, 0.0, 1.0); // Black color
+    // // Draw the text "Maze Game"
+    // cr->move_to(580, 580); // Position of the text
+    // cr->show_text("Start");
 
-    // Set the text color
-    cr->set_source_rgb(1.0, 0.0, 1.0); // Black color
-    // Draw the text "Maze Game"
-    cr->move_to(60, 400); // Position of the text
-    cr->show_text("end");
+    // // Set the text color
+    // cr->set_source_rgb(1.0, 0.0, 1.0); // Black color
+    // // Draw the text "Maze Game"
+    // cr->move_to(60, 400); // Position of the text
+    // cr->show_text("end");
 }
 void MyWindow::getLinePoints(int x1, int y1, int x2, int y2)
 {
@@ -133,71 +151,89 @@ void MyWindow::draw_line(const Cairo::RefPtr<Cairo::Context> &cr, double x1, dou
 void MyWindow::drawBoarders(const Cairo::RefPtr<Cairo::Context> &cr)
 {
     // Draw the maze border
-
     draw_line(cr, 50, 50, 750, 50);
     draw_line(cr, 50, 50, 50, 550);
     draw_line(cr, 750, 50, 750, 550);
     draw_line(cr, 50, 550, 750, 550);
-    // Draw the middle links
-    draw_line(cr, 50, 200, 300, 200);
-    draw_line(cr, 300, 50, 300, 200);
-    draw_line(cr, 300, 350, 300, 550);
-    draw_line(cr, 450, 200, 750, 200);
-    draw_line(cr, 450, 350, 450, 550);
-    // Draw additional links
-    draw_line(cr, 100, 200, 100, 350);
-    draw_line(cr, 100, 350, 200, 350);
-    draw_line(cr, 200, 100, 200, 200);
-    draw_line(cr, 200, 350, 200, 450);
-    draw_line(cr, 350, 100, 350, 300);
-    draw_line(cr, 350, 450, 350, 550);
-    draw_line(cr, 400, 100, 400, 300);
-    draw_line(cr, 400, 450, 400, 550);
-    draw_line(cr, 500, 100, 500, 300);
-    draw_line(cr, 500, 450, 500, 550);
-    draw_line(cr, 600, 200, 600, 350);
-    draw_line(cr, 600, 350, 700, 350);
-    // Draw additional links - Path from (600, 540) to (50, 50)
-    draw_line(cr, 650, 540, 650, 500);
-    draw_line(cr, 550, 500, 500, 500);
-    draw_line(cr, 500, 450, 500, 400);
-    draw_line(cr, 550, 400, 600, 400);
-    draw_line(cr, 650, 350, 650, 300);
-    draw_line(cr, 550, 300, 500, 300);
-    draw_line(cr, 500, 250, 500, 200);
-    draw_line(cr, 550, 200, 600, 200);
-    draw_line(cr, 600, 150, 600, 100);
-    draw_line(cr, 550, 100, 500, 100);
-    draw_line(cr, 450, 100, 400, 100);
-    draw_line(cr, 400, 150, 400, 200);
-    draw_line(cr, 350, 200, 300, 200);
-    draw_line(cr, 250, 200, 200, 200);
-    draw_line(cr, 200, 200, 150, 200);
-    draw_line(cr, 150, 150, 150, 100);
-    draw_line(cr, 150, 50, 100, 50);
-    draw_line(cr, 100, 100, 100, 150);
-    draw_line(cr, 100, 200, 100, 250);
-    draw_line(cr, 50, 250, 50, 300);
-    draw_line(cr, 100, 300, 100, 350);
-    draw_line(cr, 100, 400, 100, 450);
-    draw_line(cr, 50, 450, 50, 500);
-    draw_line(cr, 100, 500, 150, 500);
-    draw_line(cr, 200, 500, 250, 500);
-    draw_line(cr, 300, 500, 350, 500);
-    draw_line(cr, 400, 500, 450, 500);
-    draw_line(cr, 500, 500, 550, 500);
-    draw_line(cr, 600, 500, 600, 450);
-    draw_line(cr, 600, 400, 600, 350);
-    draw_line(cr, 650, 350, 700, 350);
-    draw_line(cr, 700, 300, 700, 250);
-    draw_line(cr, 700, 200, 700, 150);
-    draw_line(cr, 700, 100, 700, 50);
-    draw_line(cr, 650, 50, 600, 50);
-    draw_line(cr, 550, 50, 500, 50);
-    draw_line(cr, 450, 50, 400, 50);
-    draw_line(cr, 350, 50, 300, 50);
-    draw_line(cr, 250, 50, 200, 50);
-    draw_line(cr, 150, 50, 100, 50);
+
+    // cr->set_source_rgb(0.0, 0.0, 0.0);
+    // cr->rectangle(60, 60, 680, 480);
+    // cr->fill();
+
+    draw_line(cr, 0 * stepx*xfactor + 60, 1 * stepy*yfactor + 60, 2 * stepx*xfactor + 60, 1 * stepy*yfactor + 60);
+    draw_line(cr, 3 * stepx*xfactor + 60, 0 * stepy*yfactor + 60, 3 * stepx*xfactor + 60, 1 * stepy*yfactor + 60);
+    draw_line(cr, 3 * stepx*xfactor + 60, 1 * stepy*yfactor + 60, 4 * stepx*xfactor + 60, 1 * stepy*yfactor + 60);
+    draw_line(cr, 0 * stepx*xfactor + 60, 3 * stepy*yfactor + 60, 1 * stepx*xfactor + 60, 3 * stepy*yfactor + 60);
+
+    draw_line(cr, 2 * stepx*xfactor + 60, 5 * stepy*yfactor + 60, 2 * stepx*xfactor + 60, 6 * stepy*yfactor + 60);
+    draw_line(cr, 2 * stepx*xfactor + 60, 5 * stepy*yfactor + 60, 4 * stepx*xfactor + 60, 5 * stepy*yfactor + 60);
+    draw_line(cr, 3 * stepx*xfactor + 60, 5 * stepy*yfactor + 60, 3 * stepx*xfactor + 60, 7 * stepy*yfactor + 60);
+    draw_line(cr, 3 * stepx*xfactor + 60, 6 * stepy*yfactor + 60, 4 * stepx*xfactor + 60, 6 * stepy*yfactor + 60);
+
+    draw_line(cr, 4 * stepx*xfactor + 60, 6 * stepy*yfactor + 60, 4 * stepx*xfactor + 60, 10 *stepy*yfactor + 60);
+    draw_line(cr, 1 * stepx*xfactor + 60, 7 * stepy*yfactor + 60, 1 * stepx*xfactor + 60, 10 *stepy*yfactor + 60);
+    draw_line(cr, 1 * stepx*xfactor + 60, 8 * stepy*yfactor + 60, 2 * stepx*xfactor + 60, 8 * stepy*yfactor + 60);
+
+    // // Draw the middle links
+    // draw_line(cr, 50, 200, 300, 200);
+    // draw_line(cr, 300, 50, 300, 200);
+    // draw_line(cr, 300, 350, 300, 550);
+    // draw_line(cr, 450, 200, 750, 200);
+    // draw_line(cr, 450, 350, 450, 550);
+    // // Draw additional links
+    // draw_line(cr, 100, 200, 100, 350);
+    // draw_line(cr, 100, 350, 200, 350);
+    // draw_line(cr, 200, 100, 200, 200);
+    // draw_line(cr, 200, 350, 200, 450);
+    // draw_line(cr, 350, 100, 350, 300);
+    // draw_line(cr, 350, 450, 350, 550);
+    // draw_line(cr, 400, 100, 400, 300);
+    // draw_line(cr, 400, 450, 400, 550);
+    // draw_line(cr, 500, 100, 500, 300);
+    // draw_line(cr, 500, 450, 500, 550);
+    // draw_line(cr, 600, 200, 600, 350);
+    // draw_line(cr, 600, 350, 700, 350);
+    // // Draw additional links - Path from (600, 540) to (50, 50)
+    // draw_line(cr, 650, 540, 650, 500);
+    // draw_line(cr, 550, 500, 500, 500);
+    // draw_line(cr, 500, 450, 500, 400);
+    // draw_line(cr, 550, 400, 600, 400);
+    // draw_line(cr, 650, 350, 650, 300);
+    // draw_line(cr, 550, 300, 500, 300);
+    // draw_line(cr, 500, 250, 500, 200);
+    // draw_line(cr, 550, 200, 600, 200);
+    // draw_line(cr, 600, 150, 600, 100);
+    // draw_line(cr, 550, 100, 500, 100);
+    // draw_line(cr, 450, 100, 400, 100);
+    // draw_line(cr, 400, 150, 400, 200);
+    // draw_line(cr, 350, 200, 300, 200);
+    // draw_line(cr, 250, 200, 200, 200);
+    // draw_line(cr, 200, 200, 150, 200);
+    // draw_line(cr, 150, 150, 150, 100);
+    // draw_line(cr, 150, 50, 100, 50);
+    // draw_line(cr, 100, 100, 100, 150);
+    // draw_line(cr, 100, 200, 100, 250);
+    // draw_line(cr, 50, 250, 50, 300);
+    // draw_line(cr, 100, 300, 100, 350);
+    // draw_line(cr, 100, 400, 100, 450);
+    // draw_line(cr, 50, 450, 50, 500);
+    // draw_line(cr, 100, 500, 150, 500);
+    // draw_line(cr, 200, 500, 250, 500);
+    // draw_line(cr, 300, 500, 350, 500);
+    // draw_line(cr, 400, 500, 450, 500);
+    // draw_line(cr, 500, 500, 550, 500);
+    // draw_line(cr, 600, 500, 600, 450);
+    // draw_line(cr, 600, 400, 600, 350);
+    // draw_line(cr, 650, 350, 700, 350);
+    // draw_line(cr, 700, 300, 700, 250);
+    // draw_line(cr, 700, 200, 700, 150);
+    // draw_line(cr, 700, 100, 700, 50);
+    // draw_line(cr, 650, 50, 600, 50);
+    // draw_line(cr, 550, 50, 500, 50);
+    // draw_line(cr, 450, 50, 400, 50);
+    // draw_line(cr, 350, 50, 300, 50);
+    // draw_line(cr, 250, 50, 200, 50);
+    // draw_line(cr, 150, 50, 100, 50);
     once = false;
 }
 bool MyWindow::checkBoundaries(int direction)
@@ -208,7 +244,6 @@ bool MyWindow::checkBoundaries(int direction)
         {
             if ((circle_x) == vline.at(i).x1)
             {
-                //  std::cout<<"insid circle_x==vline.at(i).x1\n";
 
                 if (vline.at(i).y1 > vline.at(i).y2)
                 {
@@ -235,7 +270,6 @@ bool MyWindow::checkBoundaries(int direction)
         {
             if ((circle_y) == hline.at(i).y1)
             {
-                // std::cout<<"insid circle_y==hline.at(i).y1\n";
                 if (hline.at(i).x2 > hline.at(i).x1)
                 {
                     if (circle_x > hline.at(i).x1 && circle_x < hline.at(i).x2)
@@ -265,64 +299,132 @@ bool MyWindow::on_key_press_event(GdkEventKey *event)
     // Handle key press events
 
     mysplash->setEvent(event->keyval);
-
-    if (event->keyval == GDK_KEY_Return || event->keyval == GDK_KEY_KP_Enter) {
+    if (event->keyval == GDK_KEY_Return || event->keyval == GDK_KEY_KP_Enter)
+    {
         std::cout << "Hello" << std::endl;
+        gameparams myprms = mysplash->getParams();
+        if (myprms.level == LVL_EASY)
+        {
+            stepx = 680 / 5;
+            stepy = 480 / 10;
+            xfactor = 1;
+            yfactor = 1;
+
+            std::cout << "stepx:" << stepx << " stepy:" << stepy << " xfactor:" << xfactor << " yfactor:" << yfactor << std::endl;
+        }
+        else if (myprms.level == LVL_Mid)
+        {
+            stepx = 680 / 20;
+            stepy = 480 / 30;
+            xfactor = 4;
+            yfactor = 3;
+            std::cout << "stepx:" << stepx << " stepy:" << stepy << " xfactor:" << xfactor << " yfactor:" << yfactor << std::endl;
+        }
+        else
+        {
+            stepx = 680 / 40;
+            stepy = 480 / 50;
+            xfactor = 8;
+            yfactor = 5;
+            std::cout << "stepx:" << stepx << " stepy:" << stepy << " xfactor:" << xfactor << " yfactor:" << yfactor << std::endl;
+        }
+        if (myprms.algorithm == ALGORITHM_ALDOS)
+        {
+            // will be implemented later
+        }
+        else
+        {
+            // will be implemented later
+        }
+
         startGame = true;
     }
     switch (event->keyval)
     {
     case GDK_KEY_Left:
-        circle_x -= 10;
+        // circle_x -= 10;
+        for (int i = 0; i < stepx ; i++)
+        {
+            circle_x--;
+            if (checkBoundaries(event->keyval) == false)
+            {
+                circle_x++;
+                break;
+            }
+        }
         break;
     case GDK_KEY_Right:
-        circle_x += 10;
+        // circle_x += 10;
+        for (int i = 0; i < stepx ; i++)
+        {
+            circle_x++;
+            if (checkBoundaries(event->keyval) == false)
+            {
+                circle_x--;
+                break;
+            }
+        }
         break;
     case GDK_KEY_Up:
-        circle_y -= 10;
+        // circle_y -=8;
+        for (int i = 0; i < stepy ; i++)
+        {
+            circle_y--;
+            if (checkBoundaries(event->keyval) == false)
+            {
+                circle_y++;
+                break;
+            }
+        }
         break;
     case GDK_KEY_Down:
-        circle_y += 10;
-        break;
-    // case GDK_KEY_S:
-    //     startGame = true;
-    //     break;
-    }
-    if (checkBoundaries(event->keyval) == false)
-    {
-        switch (event->keyval)
+        // circle_y += 8;
+        for (int i = 0; i < stepy ; i++)
         {
-        case GDK_KEY_Left:
-            circle_x += 10;
-            break;
-        case GDK_KEY_Right:
-            circle_x -= 10;
-            break;
-        case GDK_KEY_Up:
-            circle_y += 10;
-            break;
-        case GDK_KEY_Down:
-            circle_y -= 10;
-            break;
+            circle_y++;
+            if (checkBoundaries(event->keyval) == false)
+            {
+                circle_y--;
+                break;
+            }
         }
+        break;
     }
+    // if (checkBoundaries(event->keyval) == false)
+    // {
+    //     switch (event->keyval)
+    //     {
+    //     case GDK_KEY_Left:
+    //         circle_x +=10;
+    //         break;
+    //     case GDK_KEY_Right:
+    //         circle_x -= 10;
+    //         break;
+    //     case GDK_KEY_Up:
+    //         circle_y += 8;
+    //         break;
+    //     case GDK_KEY_Down:
+    //         circle_y -=8;
+    //         break;
+    //     }
+    // }
 
     // Check if the circle exceeds the boundaries
-    if (circle_x < 53 || circle_x > 747 || circle_y < 53 || circle_y > 547)
+    if (circle_x < 60 || circle_x > 740 || circle_y < 60 || circle_y > 540)
     {
         // Restore the previous position if the circle exceeds the boundaries
         circle_x = prev_x;
         circle_y = prev_y;
     }
 
-    if (((circle_x >= 60) && (circle_x <= 100)) && ((circle_y >= 400) && (circle_y <= 450)))
-    {
-        std::cout << "you win\n";
-        circle_x = 600;
-        circle_y = 540;
-        startGame = false;
-        winner = true;
-    }
+    // if (((circle_x >= 60) && (circle_x <= 100)) && ((circle_y >= 400) && (circle_y <= 450)))
+    // {
+    //     std::cout << "you win\n";
+    //     circle_x = 600;
+    //     circle_y = 540;
+    //     startGame = false;
+    //     winner = true;
+    // }
 
     // Request redrawing of the window
     auto window = get_window();
