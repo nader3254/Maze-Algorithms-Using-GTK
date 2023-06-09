@@ -57,6 +57,7 @@ private:
   fusion *fusionAlgorithm;
   int selectedAlgorithm=0;
   double prevx,prevy;
+  cell finishCell;
 
 
 };

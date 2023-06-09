@@ -20,9 +20,14 @@ void MyWindow::writeStep(const Cairo::RefPtr<Cairo::Context> &cr, cell _cell)
 {
 
     int width = 0, height = 0, cx = 0, cy = 0;
-    cr->set_source_rgb(1.0, 1.0, 1.0); // Rectangle background color
+    cr->set_source_rgb(0.0, 1.0, 0.0); // Rectangle background color
     // cr->rectangle(((_cell.x * stepx) + 60) + 10, ((_cell.y * stepy) + 60) + 10, stepx - 20, stepy - 20);
     cr->rectangle(((_cell.x * stepx) + 60), ((_cell.y * stepy) + 60), stepx, stepy);
+    cr->fill();
+
+    cr->set_source_rgb(1.0, 0.0, 0.0); // Rectangle background color
+    // cr->rectangle(((_cell.x * stepx) + 60) + 10, ((_cell.y * stepy) + 60) + 10, stepx - 20, stepy - 20);
+    cr->rectangle(((finishCell.x * stepx) + 60), ((finishCell.y * stepy) + 60), stepx, stepy);
     cr->fill();
 
     cx = (_cell.x * stepx) + 60;
@@ -86,6 +91,7 @@ strt:
             else
             {
                 circle_x=61; circle_y=61;
+                winner=true;
                 startGame = false;
                 goto strt;
             }
@@ -116,12 +122,13 @@ strt:
             else
             {
                 circle_x=61; circle_y=61;
+                winner=true;
                 startGame = false;
                 goto strt;
             }
         }
     }
-    else if (winner == true)
+    else if ( winner == true)
     {
         // winner
         // Set the text font and size
@@ -143,7 +150,7 @@ strt:
         cr->set_source_rgb(0.0, 1.0, 0.0); // Black color
         // Draw the text "Maze Game"
         cr->move_to(250, 550); // Position of the text
-        cr->show_text("Press Enter to start the game");
+        cr->show_text("Press R to back to Main Menu");
     }
     else
     {
@@ -228,7 +235,7 @@ void MyWindow::drawBoarders(const Cairo::RefPtr<Cairo::Context> &cr)
     draw_line(cr, 50, 550, 750, 550);
     if (startGame == true)
     {
-        cr->set_source_rgb(0.0, 0.0, 0.0);
+        cr->set_source_rgb(0.9, 0.9, 0.9);
         cr->rectangle(60, 60, 680, 480);
         cr->fill();
     }
@@ -374,6 +381,11 @@ bool MyWindow::on_key_press_event(GdkEventKey *event)
     prevy = circle_y;
     // Handle key press events
 
+    if (event->keyval == GDK_KEY_r )
+    {
+
+        winner=false;
+    }
     mysplash->setEvent(event->keyval);
     if (event->keyval == GDK_KEY_Return || event->keyval == GDK_KEY_KP_Enter)
     {
@@ -388,6 +400,7 @@ bool MyWindow::on_key_press_event(GdkEventKey *event)
             stepy = 480 / 10;
             xfactor = 1;
             yfactor = 1;
+            finishCell.x=4;finishCell.y=9;
 
             std::cout << "stepx:" << stepx << " stepy:" << stepy << " xfactor:" << xfactor << " yfactor:" << yfactor << std::endl;
         }
