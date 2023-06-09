@@ -89,7 +89,7 @@ void splash::label(const Cairo::RefPtr<Cairo::Context> &cr, std::string text, in
     cr->set_font_size(font_desc2.get_size() / Pango::SCALE);
 
     // Set the text color
-    cr->set_source_rgb(0.0, 1.0, 1.0); // Black color
+    cr->set_source_rgb(0.0, 1.0, 0.0); // Black color
                                        // Draw the text "Maze Game"
                                        // cr->move_to(250, 550); // Position of the text
     cr->move_to(x, y);                 // Position of the text
@@ -143,11 +143,11 @@ gameparams splash::getParams()
     {
         tmp.level = LVL_HIGH;
     }
-    if (tmplvl == "aldos-broder")
+    if (tmpalg == "aldos-broder")
     {
         tmp.algorithm = ALGORITHM_ALDOS;
     }
-    if (tmplvl == "fusion")
+    if (tmpalg == "fusion")
     {
         tmp.algorithm = ALGORITHM_FUSION;
     }

@@ -1,8 +1,13 @@
+#ifndef WINDOW_H
+#define WINDOW_H
+
 #include <gtkmm.h>
 #include <cairomm/context.h>
 #include <vector>
 #include <iostream>
 #include "splash.h"
+#include "aldos-broder.h"
+#include "fusion.h"
 
 #define M_PI 3.14159265358979323846
 
@@ -14,10 +19,7 @@ typedef struct {
 } Line;
 
 
-typedef struct {
-  int x;
-  int y;
-} cell;
+
 
 
 
@@ -45,12 +47,18 @@ private:
 
   
   //double circle_x=600, circle_y=540;
-  double circle_x=80, circle_y=80;
+  double circle_x=61, circle_y=61;
   int stepx=0,stepy=0,xfactor=0,yfactor=0;
   std::vector<Line> vline;
   std::vector<Line> hline;
   bool once=true,startGame=false,winner=false;
   splash *mysplash;
+  aldosBroder* aldosAlgorithm;
+  fusion *fusionAlgorithm;
+  int selectedAlgorithm=0;
+  double prevx,prevy;
 
 
 };
+
+#endif

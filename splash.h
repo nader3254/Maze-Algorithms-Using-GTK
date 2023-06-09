@@ -1,3 +1,6 @@
+#ifndef SPLASH_H
+#define SPLASH_H
+
 #include <gtkmm.h>
 #include <cairomm/context.h>
 #include <vector>
@@ -34,3 +37,5 @@ private:
   int lvlIdx = 0, AlgIdx = 0,cursorIdx=1;
 
 };
+
+#endif

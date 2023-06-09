@@ -21,10 +21,27 @@ void MyWindow::writeStep(const Cairo::RefPtr<Cairo::Context> &cr, cell _cell)
 
     int width = 0, height = 0, cx = 0, cy = 0;
     cr->set_source_rgb(1.0, 1.0, 1.0); // Rectangle background color
-    cr->rectangle(((_cell.x * stepx) + 60) + 10, ((_cell.y * stepy) + 60) + 10, stepx - 20, stepy - 20);
+    // cr->rectangle(((_cell.x * stepx) + 60) + 10, ((_cell.y * stepy) + 60) + 10, stepx - 20, stepy - 20);
+    cr->rectangle(((_cell.x * stepx) + 60), ((_cell.y * stepy) + 60), stepx, stepy);
     cr->fill();
+
     cx = (_cell.x * stepx) + 60;
     cy = (_cell.y * stepy) + 60;
+
+    draw_line(cr, 0 * stepx * xfactor + 60, 1 * stepy * yfactor + 60, 2 * stepx * xfactor + 60, 1 * stepy * yfactor + 60);
+    draw_line(cr, 3 * stepx * xfactor + 60, 0 * stepy * yfactor + 60, 3 * stepx * xfactor + 60, 1 * stepy * yfactor + 60);
+    draw_line(cr, 3 * stepx * xfactor + 60, 1 * stepy * yfactor + 60, 4 * stepx * xfactor + 60, 1 * stepy * yfactor + 60);
+    draw_line(cr, 0 * stepx * xfactor + 60, 3 * stepy * yfactor + 60, 1 * stepx * xfactor + 60, 3 * stepy * yfactor + 60);
+
+    draw_line(cr, 2 * stepx * xfactor + 60, 5 * stepy * yfactor + 60, 2 * stepx * xfactor + 60, 6 * stepy * yfactor + 60);
+    draw_line(cr, 2 * stepx * xfactor + 60, 5 * stepy * yfactor + 60, 4 * stepx * xfactor + 60, 5 * stepy * yfactor + 60);
+    draw_line(cr, 3 * stepx * xfactor + 60, 5 * stepy * yfactor + 60, 3 * stepx * xfactor + 60, 7 * stepy * yfactor + 60);
+    draw_line(cr, 3 * stepx * xfactor + 60, 6 * stepy * yfactor + 60, 4 * stepx * xfactor + 60, 6 * stepy * yfactor + 60);
+
+    draw_line(cr, 4 * stepx * xfactor + 60, 6 * stepy * yfactor + 60, 4 * stepx * xfactor + 60, 10 * stepy * yfactor + 60);
+    draw_line(cr, 1 * stepx * xfactor + 60, 7 * stepy * yfactor + 60, 1 * stepx * xfactor + 60, 10 * stepy * yfactor + 60);
+    draw_line(cr, 1 * stepx * xfactor + 60, 8 * stepy * yfactor + 60, 2 * stepx * xfactor + 60, 8 * stepy * yfactor + 60);
+
     // std::cout << "x:" << cx << " y:" << cy << " cellx:" << _cell.x << " celly:" << _cell.y << " xstep:" << stepx << " ystep:" << stepy << std::endl;
 }
 cell MyWindow::currentCell()
@@ -39,16 +56,70 @@ bool MyWindow::on_draw(const Cairo::RefPtr<Cairo::Context> &cr)
 {
     // Call the base class implementation
     Gtk::Window::on_draw(cr);
-
+strt:
     if (startGame == true)
     {
         // playing
         // ask algorithm to move
 
-        drawHeadLine(cr);
-        drawBoarders(cr);
-        writeStep(cr, currentCell());
-        drawPlayer(cr);
+        if (selectedAlgorithm == ALGORITHM_ALDOS)
+        {
+
+            if (aldosAlgorithm->CheckWin() == false)
+            {
+                drawHeadLine(cr);
+                drawBoarders(cr);
+                if (aldosAlgorithm->canImove(currentCell()) == true)
+                {
+                }
+                else
+                {
+                    circle_x = prevx;
+                    circle_y = prevy;
+                }
+                for (auto i : aldosAlgorithm->getVisited())
+                {
+                    writeStep(cr, i);
+                }
+                drawPlayer(cr);
+            }
+            else
+            {
+                startGame = false;
+                // winner = true;
+                goto strt;
+            }
+        }
+        if (selectedAlgorithm == ALGORITHM_FUSION)
+        {
+            std::cout<<"inside fusion\n";
+            if (fusionAlgorithm->CheckWin() == false)
+            {
+                drawHeadLine(cr);
+                drawBoarders(cr);
+                if (fusionAlgorithm->canImove(currentCell()) == true)
+                {
+                    std::cout<<"inside i can move \n";
+                }
+                else
+                {
+                    cell tmppp = fusionAlgorithm->getRandom();
+                    circle_x = tmppp.x;
+                    circle_y = tmppp.y ;
+                }
+                for (auto i : fusionAlgorithm->getVisited())
+                {
+                    writeStep(cr, i);
+                }
+                drawPlayer(cr);
+            }
+            else
+            {
+                startGame = false;
+                // winner = true;
+                goto strt;
+            }
+        }
     }
     else if (winner == true)
     {
@@ -155,25 +226,30 @@ void MyWindow::drawBoarders(const Cairo::RefPtr<Cairo::Context> &cr)
     draw_line(cr, 50, 50, 50, 550);
     draw_line(cr, 750, 50, 750, 550);
     draw_line(cr, 50, 550, 750, 550);
+    if (startGame == true)
+    {
+        cr->set_source_rgb(0.0, 0.0, 0.0);
+        cr->rectangle(60, 60, 680, 480);
+        cr->fill();
+    }
 
-    // cr->set_source_rgb(0.0, 0.0, 0.0);
-    // cr->rectangle(60, 60, 680, 480);
-    // cr->fill();
+    if (once == true)
+    {
 
-    draw_line(cr, 0 * stepx*xfactor + 60, 1 * stepy*yfactor + 60, 2 * stepx*xfactor + 60, 1 * stepy*yfactor + 60);
-    draw_line(cr, 3 * stepx*xfactor + 60, 0 * stepy*yfactor + 60, 3 * stepx*xfactor + 60, 1 * stepy*yfactor + 60);
-    draw_line(cr, 3 * stepx*xfactor + 60, 1 * stepy*yfactor + 60, 4 * stepx*xfactor + 60, 1 * stepy*yfactor + 60);
-    draw_line(cr, 0 * stepx*xfactor + 60, 3 * stepy*yfactor + 60, 1 * stepx*xfactor + 60, 3 * stepy*yfactor + 60);
+        draw_line(cr, 0 * stepx * xfactor + 60, 1 * stepy * yfactor + 60, 2 * stepx * xfactor + 60, 1 * stepy * yfactor + 60);
+        draw_line(cr, 3 * stepx * xfactor + 60, 0 * stepy * yfactor + 60, 3 * stepx * xfactor + 60, 1 * stepy * yfactor + 60);
+        draw_line(cr, 3 * stepx * xfactor + 60, 1 * stepy * yfactor + 60, 4 * stepx * xfactor + 60, 1 * stepy * yfactor + 60);
+        draw_line(cr, 0 * stepx * xfactor + 60, 3 * stepy * yfactor + 60, 1 * stepx * xfactor + 60, 3 * stepy * yfactor + 60);
 
-    draw_line(cr, 2 * stepx*xfactor + 60, 5 * stepy*yfactor + 60, 2 * stepx*xfactor + 60, 6 * stepy*yfactor + 60);
-    draw_line(cr, 2 * stepx*xfactor + 60, 5 * stepy*yfactor + 60, 4 * stepx*xfactor + 60, 5 * stepy*yfactor + 60);
-    draw_line(cr, 3 * stepx*xfactor + 60, 5 * stepy*yfactor + 60, 3 * stepx*xfactor + 60, 7 * stepy*yfactor + 60);
-    draw_line(cr, 3 * stepx*xfactor + 60, 6 * stepy*yfactor + 60, 4 * stepx*xfactor + 60, 6 * stepy*yfactor + 60);
+        draw_line(cr, 2 * stepx * xfactor + 60, 5 * stepy * yfactor + 60, 2 * stepx * xfactor + 60, 6 * stepy * yfactor + 60);
+        draw_line(cr, 2 * stepx * xfactor + 60, 5 * stepy * yfactor + 60, 4 * stepx * xfactor + 60, 5 * stepy * yfactor + 60);
+        draw_line(cr, 3 * stepx * xfactor + 60, 5 * stepy * yfactor + 60, 3 * stepx * xfactor + 60, 7 * stepy * yfactor + 60);
+        draw_line(cr, 3 * stepx * xfactor + 60, 6 * stepy * yfactor + 60, 4 * stepx * xfactor + 60, 6 * stepy * yfactor + 60);
 
-    draw_line(cr, 4 * stepx*xfactor + 60, 6 * stepy*yfactor + 60, 4 * stepx*xfactor + 60, 10 *stepy*yfactor + 60);
-    draw_line(cr, 1 * stepx*xfactor + 60, 7 * stepy*yfactor + 60, 1 * stepx*xfactor + 60, 10 *stepy*yfactor + 60);
-    draw_line(cr, 1 * stepx*xfactor + 60, 8 * stepy*yfactor + 60, 2 * stepx*xfactor + 60, 8 * stepy*yfactor + 60);
-
+        draw_line(cr, 4 * stepx * xfactor + 60, 6 * stepy * yfactor + 60, 4 * stepx * xfactor + 60, 10 * stepy * yfactor + 60);
+        draw_line(cr, 1 * stepx * xfactor + 60, 7 * stepy * yfactor + 60, 1 * stepx * xfactor + 60, 10 * stepy * yfactor + 60);
+        draw_line(cr, 1 * stepx * xfactor + 60, 8 * stepy * yfactor + 60, 2 * stepx * xfactor + 60, 8 * stepy * yfactor + 60);
+    }
     // // Draw the middle links
     // draw_line(cr, 50, 200, 300, 200);
     // draw_line(cr, 300, 50, 300, 200);
@@ -294,8 +370,8 @@ bool MyWindow::checkBoundaries(int direction)
 
 bool MyWindow::on_key_press_event(GdkEventKey *event)
 {
-    double prev_x = circle_x;
-    double prev_y = circle_y;
+    prevx = circle_x;
+    prevy = circle_y;
     // Handle key press events
 
     mysplash->setEvent(event->keyval);
@@ -303,8 +379,11 @@ bool MyWindow::on_key_press_event(GdkEventKey *event)
     {
         std::cout << "Hello" << std::endl;
         gameparams myprms = mysplash->getParams();
+        int algx, algy;
         if (myprms.level == LVL_EASY)
         {
+            algx = 5;
+            algy = 10;
             stepx = 680 / 5;
             stepy = 480 / 10;
             xfactor = 1;
@@ -314,6 +393,8 @@ bool MyWindow::on_key_press_event(GdkEventKey *event)
         }
         else if (myprms.level == LVL_Mid)
         {
+            algx = 20;
+            algy = 30;
             stepx = 680 / 20;
             stepy = 480 / 30;
             xfactor = 4;
@@ -322,6 +403,8 @@ bool MyWindow::on_key_press_event(GdkEventKey *event)
         }
         else
         {
+            algx = 40;
+            algy = 50;
             stepx = 680 / 40;
             stepy = 480 / 50;
             xfactor = 8;
@@ -330,11 +413,13 @@ bool MyWindow::on_key_press_event(GdkEventKey *event)
         }
         if (myprms.algorithm == ALGORITHM_ALDOS)
         {
-            // will be implemented later
+            selectedAlgorithm = ALGORITHM_ALDOS;
+            aldosAlgorithm = new aldosBroder(algx, algy);
         }
         else
         {
-            // will be implemented later
+            selectedAlgorithm = ALGORITHM_FUSION;
+            fusionAlgorithm = new fusion(algx, algy);
         }
 
         startGame = true;
@@ -343,7 +428,7 @@ bool MyWindow::on_key_press_event(GdkEventKey *event)
     {
     case GDK_KEY_Left:
         // circle_x -= 10;
-        for (int i = 0; i < stepx ; i++)
+        for (int i = 0; i < stepx; i++)
         {
             circle_x--;
             if (checkBoundaries(event->keyval) == false)
@@ -355,7 +440,7 @@ bool MyWindow::on_key_press_event(GdkEventKey *event)
         break;
     case GDK_KEY_Right:
         // circle_x += 10;
-        for (int i = 0; i < stepx ; i++)
+        for (int i = 0; i < stepx; i++)
         {
             circle_x++;
             if (checkBoundaries(event->keyval) == false)
@@ -367,7 +452,7 @@ bool MyWindow::on_key_press_event(GdkEventKey *event)
         break;
     case GDK_KEY_Up:
         // circle_y -=8;
-        for (int i = 0; i < stepy ; i++)
+        for (int i = 0; i < stepy; i++)
         {
             circle_y--;
             if (checkBoundaries(event->keyval) == false)
@@ -379,7 +464,7 @@ bool MyWindow::on_key_press_event(GdkEventKey *event)
         break;
     case GDK_KEY_Down:
         // circle_y += 8;
-        for (int i = 0; i < stepy ; i++)
+        for (int i = 0; i < stepy; i++)
         {
             circle_y++;
             if (checkBoundaries(event->keyval) == false)
@@ -413,8 +498,8 @@ bool MyWindow::on_key_press_event(GdkEventKey *event)
     if (circle_x < 60 || circle_x > 740 || circle_y < 60 || circle_y > 540)
     {
         // Restore the previous position if the circle exceeds the boundaries
-        circle_x = prev_x;
-        circle_y = prev_y;
+        circle_x = prevx;
+        circle_y = prevy;
     }
 
     // if (((circle_x >= 60) && (circle_x <= 100)) && ((circle_y >= 400) && (circle_y <= 450)))
