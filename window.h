@@ -2,7 +2,7 @@
 #include <cairomm/context.h>
 #include <vector>
 #include <iostream>
-
+#include "splash.h"
 
 #define M_PI 3.14159265358979323846
 
@@ -12,6 +12,10 @@ typedef struct {
   int x2;
   int y2;
 } Line;
+
+
+
+
 
 
 class MyWindow : public Gtk::Window 
@@ -38,6 +42,7 @@ private:
   std::vector<Line> vline;
   std::vector<Line> hline;
   bool once=true,startGame=false,winner=false;
+  splash *mysplash;
 
 
 };

@@ -1,5 +1,6 @@
 #include "window.h"
 
+
 MyWindow::MyWindow()
 {
     // Set the window's title
@@ -14,6 +15,8 @@ MyWindow::MyWindow()
 
     // Connect key press event signal
     signal_key_press_event().connect(sigc::mem_fun(*this, &MyWindow::on_key_press_event));
+    mysplash = new splash();
+
 }
 
 bool MyWindow::on_draw(const Cairo::RefPtr<Cairo::Context> &cr)
@@ -55,26 +58,8 @@ bool MyWindow::on_draw(const Cairo::RefPtr<Cairo::Context> &cr)
     else
     {
         // intro
-        // Set the text font and size
-        Pango::FontDescription font_desc("Arial 50");
-        cr->select_font_face(font_desc.get_family(), Cairo::FONT_SLANT_NORMAL, Cairo::FONT_WEIGHT_NORMAL);
-        cr->set_font_size(font_desc.get_size() / Pango::SCALE);
-
-        // Set the text color
-        cr->set_source_rgb(0.0, 0.0, 0.0); // Black color
-        // Draw the text "Maze Game"
-        cr->move_to(280, 280); // Position of the text
-        cr->show_text("Maze Game");
-
-        Pango::FontDescription font_desc2("Arial 25");
-        cr->select_font_face(font_desc2.get_family(), Cairo::FONT_SLANT_NORMAL, Cairo::FONT_WEIGHT_NORMAL);
-        cr->set_font_size(font_desc2.get_size() / Pango::SCALE);
-
-        // Set the text color
-        cr->set_source_rgb(0.0, 1.0, 0.0); // Black color
-        // Draw the text "Maze Game"
-        cr->move_to(250, 550); // Position of the text
-        cr->show_text("Press Enter to start the game");
+        mysplash->draw(cr);
+     
     }
 
     return true;
@@ -278,6 +263,8 @@ bool MyWindow::on_key_press_event(GdkEventKey *event)
     double prev_x = circle_x;
     double prev_y = circle_y;
     // Handle key press events
+
+    mysplash->setEvent(event->keyval);
 
     if (event->keyval == GDK_KEY_Return || event->keyval == GDK_KEY_KP_Enter) {
         std::cout << "Hello" << std::endl;
