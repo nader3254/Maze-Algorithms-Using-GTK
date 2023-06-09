@@ -85,8 +85,8 @@ strt:
             }
             else
             {
+                circle_x=61; circle_y=61;
                 startGame = false;
-                // winner = true;
                 goto strt;
             }
         }
@@ -115,8 +115,8 @@ strt:
             }
             else
             {
+                circle_x=61; circle_y=61;
                 startGame = false;
-                // winner = true;
                 goto strt;
             }
         }
