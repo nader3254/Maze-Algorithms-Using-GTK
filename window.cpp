@@ -19,9 +19,10 @@ MyWindow::MyWindow()
 void MyWindow::writeStep(const Cairo::RefPtr<Cairo::Context> &cr, cell _cell)
 {
 
-    int width = 0, height = 0, cx = 0, cy = 0;
+    int width = ((740/stepx)), height = ((540/stepy)), cx = 0, cy = 0;
     cr->set_source_rgb(0.0, 1.0, 0.0); // Rectangle background color
     // cr->rectangle(((_cell.x * stepx) + 60) + 10, ((_cell.y * stepy) + 60) + 10, stepx - 20, stepy - 20);
+    if(_cell.x<width && _cell.y<height )
     cr->rectangle(((_cell.x * stepx) + 60), ((_cell.y * stepy) + 60), stepx, stepy);
     cr->fill();
 
@@ -45,7 +46,7 @@ void MyWindow::writeStep(const Cairo::RefPtr<Cairo::Context> &cr, cell _cell)
 
     draw_line(cr, 4 * stepx * xfactor + 60, 6 * stepy * yfactor + 60, 4 * stepx * xfactor + 60, 10 * stepy * yfactor + 60);
     draw_line(cr, 1 * stepx * xfactor + 60, 7 * stepy * yfactor + 60, 1 * stepx * xfactor + 60, 10 * stepy * yfactor + 60);
-    draw_line(cr, 1 * stepx * xfactor + 60, 8 * stepy * yfactor + 60, 2 * stepx * xfactor + 60, 8 * stepy * yfactor + 60);
+    draw_line(cr, 1 * stepx * xfactor + 60, 8 * stepy * yfactor + 60, 2 * stepx * xfactor + 60, 8 *  stepy * yfactor + 60);
 
     // std::cout << "x:" << cx << " y:" << cy << " cellx:" << _cell.x << " celly:" << _cell.y << " xstep:" << stepx << " ystep:" << stepy << std::endl;
 }
@@ -412,16 +413,25 @@ bool MyWindow::on_key_press_event(GdkEventKey *event)
             stepy = 480 / 30;
             xfactor = 4;
             yfactor = 3;
+            finishCell.x=19;finishCell.y=29;
             std::cout << "stepx:" << stepx << " stepy:" << stepy << " xfactor:" << xfactor << " yfactor:" << yfactor << std::endl;
         }
         else
         {
-            algx = 40;
-            algy = 50;
-            stepx = 680 / 40;
-            stepy = 480 / 50;
-            xfactor = 8;
-            yfactor = 5;
+            // algx = 40;
+            // algy = 50;
+            // stepx = 680 / 40;
+            // stepy = 480 / 50;
+            // xfactor = 8;
+            // yfactor = 5;
+            // finishCell.x=39;finishCell.y=49;
+            algx = 74;
+            algy = 54;
+            stepx = 680 / 74;
+            stepy = 480 / 54;
+            xfactor = 14.8;
+            yfactor = 5.4;
+            finishCell.x=73;finishCell.y=53;
             std::cout << "stepx:" << stepx << " stepy:" << stepy << " xfactor:" << xfactor << " yfactor:" << yfactor << std::endl;
         }
         if (myprms.algorithm == ALGORITHM_ALDOS)
@@ -508,21 +518,26 @@ bool MyWindow::on_key_press_event(GdkEventKey *event)
     // }
 
     // Check if the circle exceeds the boundaries
-    if (circle_x < 60 || circle_x > 740 || circle_y < 60 || circle_y > 540)
+    if (circle_x < 60 || circle_x > (740) || circle_y < 60 || circle_y > (540))
     {
         // Restore the previous position if the circle exceeds the boundaries
         circle_x = prevx;
         circle_y = prevy;
     }
 
-    // if (((circle_x >= 60) && (circle_x <= 100)) && ((circle_y >= 400) && (circle_y <= 450)))
-    // {
-    //     std::cout << "you win\n";
-    //     circle_x = 600;
-    //     circle_y = 540;
-    //     startGame = false;
-    //     winner = true;
-    // }
+    int fnshx=((finishCell.x * stepx) + 60);
+    int fnshy=((finishCell.y * stepy) + 60);
+    if (((circle_x >= (fnshx)) && (circle_x <= fnshx+stepx)) && ((circle_y >= fnshy) && (circle_y <= fnshy+stepy)))
+    {
+        std::cout << "you win\n";
+        circle_x = 61;
+        circle_y = 61;
+        vline.clear();hline.clear();
+
+        startGame = false;
+        once=true;
+        winner = true;
+    }
 
     // Request redrawing of the window
     auto window = get_window();
